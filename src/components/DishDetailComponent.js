@@ -6,6 +6,7 @@ import {
 } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { Control, LocalForm, Errors } from 'react-redux-form';
+import { Loading } from './LoadingComponent';
 
 function RenderDish({ dish }) {
     return (
@@ -20,7 +21,8 @@ function RenderDish({ dish }) {
         </div>
     );
 }
-function RenderComments({ dishComments }) {
+
+function RenderComments({ dishComments, addComment, dishId }) {
     const comments = dishComments.map((comment) => {
         return (
             <div className="container" key={comment.id}>
@@ -44,14 +46,32 @@ function RenderComments({ dishComments }) {
         </h1>
             <div>
                 {comments}
-                <CommentForm />
+                <CommentForm dishId={dishId} addComment={addComment} />
             </div>
         </div>
     );
 }
-const DishDetail = (props) => {
-    if (props.dish != null) {
 
+const DishDetail = (props) => {
+    if (props.isLoading) {
+        return (
+            <div className="container">
+                <div className="row">
+                    <Loading />
+                </div>
+            </div>
+        );
+    }
+    else if (props.errMess) {
+        return (
+            <div className="container">
+                <div className="row">
+                    <h4>{props.errMess}</h4>
+                </div>
+            </div>
+        );
+    }
+    else if (props.dish != null) {
         return (
             <div className="container">
                 <div className="row">
@@ -66,7 +86,8 @@ const DishDetail = (props) => {
                 </div>
                 <div className="row">
                     <RenderDish dish={props.dish} />
-                    <RenderComments dishComments={props.comments} />
+                    <RenderComments dishComments={props.comments} addComment={props.addComment}
+                        dishId={props.dish.id} />
                 </div>
             </div>
         );
@@ -75,7 +96,6 @@ const DishDetail = (props) => {
         <div></div>
     )
 }
-
 
 class CommentForm extends Component {
     constructor(props) {
@@ -92,6 +112,7 @@ class CommentForm extends Component {
         });
     }
     handleSubmit(values) {
+        this.props.addComment(this.props.dishId, values.rating, values.author, values.comment);
         alert('Current State is: ' + JSON.stringify(values));
     }
     render() {
@@ -106,7 +127,7 @@ class CommentForm extends Component {
                     <ModalHeader toggle={this.toggleModal}>Submit Comment</ModalHeader>
                     <ModalBody>
                         <LocalForm onSubmit={(values) => this.handleSubmit(values)}>
-                            <Label htmlFor="yourname">Rating</Label>
+                            <Label htmlFor="rating">Rating</Label>
                             <Row className="form-group">
                                 <Col >
                                     <Control.select model=".rating" name="Rating"
@@ -119,10 +140,10 @@ class CommentForm extends Component {
                                     </Control.select>
                                 </Col>
                             </Row>
-                            <Label htmlFor="yourname">First Name</Label>
+                            <Label htmlFor="author">First Name</Label>
                             <Row className="form-group">
                                 <Col md>
-                                    <Control.text model=".yourname" id="yourname" name="yourname"
+                                    <Control.text model=".author" id="author" name="author"
                                         placeholder="Your Name"
                                         className="form-control"
                                         validators={{
@@ -160,7 +181,6 @@ class CommentForm extends Component {
                     </ModalBody>
                 </Modal>
             </div>
-
         );
     }
 }
