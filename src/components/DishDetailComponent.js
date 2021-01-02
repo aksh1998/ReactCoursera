@@ -8,16 +8,24 @@ import { Link } from 'react-router-dom';
 import { Control, LocalForm, Errors } from 'react-redux-form';
 import { Loading } from './LoadingComponent';
 import { baseUrl } from '../shared/baseUrl';
+import { FadeTransform, Fade, Stagger } from 'react-animation-components';
+
 function RenderDish({ dish }) {
     return (
         <div className="col-12 col-md-5 m-1">
-            <Card>
-                <CardImg top src={baseUrl + dish.image} alt={dish.name} />
-                <CardBody>
-                    <CardTitle>{dish.name}</CardTitle>
-                    <CardText>{dish.description}</CardText>
-                </CardBody>
-            </Card>
+            <FadeTransform
+                in
+                transformProps={{
+                    exitTransform: 'scale(0.5) translateY(-50%)'
+                }}>
+                <Card>
+                    <CardImg top src={baseUrl + dish.image} alt={dish.name} />
+                    <CardBody>
+                        <CardTitle>{dish.name}</CardTitle>
+                        <CardText>{dish.description}</CardText>
+                    </CardBody>
+                </Card>
+            </FadeTransform>
         </div>
     );
 }
@@ -25,18 +33,21 @@ function RenderDish({ dish }) {
 function RenderComments({ dishComments, postComment, dishId }) {
     const comments = dishComments.map((comment) => {
         return (
-            <div className="container" key={comment.id}>
-                <div>
-                    <p>
-                        {comment.comment}
-                    </p>
+            <Stagger in>
+                <Fade in>                <div className="container" key={comment.id}>
+                    <div>
+                        <p>
+                            {comment.comment}
+                        </p>
+                    </div>
+                    <div>
+                        <p>
+                            --{comment.author} ,{comment.date}
+                        </p>
+                    </div>
                 </div>
-                <div>
-                    <p>
-                        --{comment.author} ,{comment.date}
-                    </p>
-                </div>
-            </div>
+                </Fade>
+            </Stagger>
         );
     });
     return (
