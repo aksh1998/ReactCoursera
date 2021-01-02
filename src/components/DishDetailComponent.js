@@ -7,12 +7,12 @@ import {
 import { Link } from 'react-router-dom';
 import { Control, LocalForm, Errors } from 'react-redux-form';
 import { Loading } from './LoadingComponent';
-
+import { baseUrl } from '../shared/baseUrl';
 function RenderDish({ dish }) {
     return (
         <div className="col-12 col-md-5 m-1">
             <Card>
-                <CardImg top src={dish.image} alt={dish.name} />
+                <CardImg top src={baseUrl + dish.image} alt={dish.name} />
                 <CardBody>
                     <CardTitle>{dish.name}</CardTitle>
                     <CardText>{dish.description}</CardText>
@@ -22,7 +22,7 @@ function RenderDish({ dish }) {
     );
 }
 
-function RenderComments({ dishComments, addComment, dishId }) {
+function RenderComments({ dishComments, postComment, dishId }) {
     const comments = dishComments.map((comment) => {
         return (
             <div className="container" key={comment.id}>
@@ -46,7 +46,7 @@ function RenderComments({ dishComments, addComment, dishId }) {
         </h1>
             <div>
                 {comments}
-                <CommentForm dishId={dishId} addComment={addComment} />
+                <CommentForm dishId={dishId} postComment={postComment} />
             </div>
         </div>
     );
@@ -86,7 +86,7 @@ const DishDetail = (props) => {
                 </div>
                 <div className="row">
                     <RenderDish dish={props.dish} />
-                    <RenderComments dishComments={props.comments} addComment={props.addComment}
+                    <RenderComments dishComments={props.comments} postComment={props.postComment}
                         dishId={props.dish.id} />
                 </div>
             </div>
@@ -112,7 +112,7 @@ class CommentForm extends Component {
         });
     }
     handleSubmit(values) {
-        this.props.addComment(this.props.dishId, values.rating, values.author, values.comment);
+        this.props.postComment(this.props.dishId, values.rating, values.author, values.comment);
         alert('Current State is: ' + JSON.stringify(values));
     }
     render() {
